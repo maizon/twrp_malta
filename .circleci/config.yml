@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  build:
+    docker: 
+      - image:  fr3akyphantom/droid-builder:focal
+    steps:
+      - checkout
+      - run: pwd
+      - run: ls
+      - run: mkdir -p twrp
+      - run: cd twrp
+      - run: mkdir -p ~/.bin
+      - run: PATH="${HOME}/.bin:${PATH}"
+      - run: sudo apt-get update
+      - run: sudo apt-get install curl
+      - run: curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo
+      - run: chmod a+rx ~/.bin/repo
+      - run: cd twrp
+      - run: git config --global user.email "maizondroidplay@gmail.com"
+      - run: git config --global user.name "Your Name"
+      - run: repo init --depth=1 -u git://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni.git -b twrp-9.0
+      - run: git clone https://github.com/maizon/twrp_malta_device_tree device/motorola/malta
+      - run: repo sync -j9 --force-sync
+      - run: source build/envsetup.sh
+      - run: export ALLOW_MISSING_DEPENDENCIES=true
+      - run: export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
+      - run: export LC_ALL="C"
+      - run: export ALLOW_MISSING_DEPENDENCIES=true; . build/envsetup.sh; lunch omni_malta-eng; mka bootimage
+      - run: cd /home/circleci/project/twrp/out/target/product/malta/recovery.img
+      - run: curl -s --upload-file boot.img https://transfer.sh/ && echo ""
+      - run: curl -s --upload-file recovery.img https://transfer.sh/ && echo  ""
+ 
