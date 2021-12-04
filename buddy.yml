@@ -1,7 +1,9 @@
-- pipeline: "buildandroid"
+- pipeline: "Builf"
   on: "CLICK"
   refs:
-  - "refs/heads/master"
+  - "refs/heads/main"
+  priority: "NORMAL"
+  fail_on_prepare_env_warning: true
   actions:
   - action: "Execute: npm test"
     type: "BUILD"
